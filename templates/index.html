@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Stock Price Checker</title>
+    <style>
+        body {
+            background-color: #111;
+            color: #fff;
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+        }
+        h1 {
+            margin-bottom: 30px;
+        }
+        input {
+            padding: 12px;
+            font-size: 18px;
+            border-radius: 8px;
+            border: none;
+            margin-right: 10px;
+            text-transform: uppercase;
+        }
+        button {
+            padding: 12px 20px;
+            font-size: 18px;
+            border-radius: 8px;
+            border: none;
+            background-color: #2563eb;
+            color: white;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #1d4ed8;
+        }
+        #result {
+            margin-top: 30px;
+            font-size: 24px;
+            text-align: center;
+        }
+        .green { color: #22c55e; }
+        .red { color: #ef4444; }
+    </style>
+</head>
+<body>
+    <h1>Stock Price Checker</h1>
+    <div>
+        <input type="text" id="symbol" placeholder="e.g. AAPL">
+        <button onclick="getStock()">Check Price</button>
+    </div>
+    <div id="result"></div>
+
+    <script>
+        function getStock() {
+            const symbol = document.getElementById('symbol').value;
+            const resultDiv = document.getElementById('result');
+            resultDiv.innerHTML = "Loading...";
+
+            fetch(`/stock?symbol=${symbol}`)
+                .then(res => res.json())
+                .then(data => {
+                    if (data.error) {
+                        resultDiv.innerHTML = "Stock not found. Try a different symbol.";
+                        return;
+                    }
+                    const colorClass = data.change.startsWith('-') ? 'red' : 'green';
+                    resultDiv.innerHTML = `
+                        <p>${data.symbol}</p>
+                        <p>$${data.price}</p>
+                        <p class="${colorClass}">${data.change} (${data.change_percent})</p>
+                    `;
+                });
+        }
+    </script>
+</body>
+</html>
