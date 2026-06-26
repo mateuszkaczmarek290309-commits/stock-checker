@@ -22,9 +22,9 @@ def stock():
     response = requests.get(url)
     data = response.json()
 
-    quote = data.get('Global Quote', {})
-    if not quote:
-        return jsonify({"error": "Stock not found"})
+  quote = data.get('Global Quote', {})
+if not quote:
+    return jsonify({"error": "Stock not found", "debug_url": url, "raw_response": data})
 
     return jsonify({
         "symbol": quote.get('01. symbol'),
