@@ -18,6 +18,7 @@ def index():
 def stock():
     symbol = request.args.get('symbol', '').upper()
     url = f"https://www.alphavantage.co/query?function=GLOBAL_QUOTE&symbol={symbol}&apikey={API_KEY}"
+    print(f"DEBUG: URL is {url}")
     response = requests.get(url)
     data = response.json()
 
