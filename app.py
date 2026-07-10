@@ -8,7 +8,6 @@ load_dotenv()
 app = Flask(__name__)
 
 API_KEY = os.getenv("API_KEY")
-print(f"DEBUG: API_KEY is {API_KEY}")
 
 @app.route('/')
 def index():
@@ -17,20 +16,22 @@ def index():
 @app.route('/stock')
 def stock():
     symbol = request.args.get('symbol', '').upper()
-    url = f"https://www.alphavantage.co/query?function=GLOBAL_QUOTE&symbol={symbol}&apikey={API_KEY}"
-    print(f"DEBUG: URL is {url}")
+    url = f"https://finnhub.io/api/v1/quote?symbol={symbol}&token={API_KEY}"
     response = requests.get(url)
     data = response.json()
 
-    quote = data.get('Global Quote', {})
-    if not quote:
-        return jsonify({"error": "Stock not found", "debug_url": url, "raw_response": data})
+    price = data.get('c')
+    change = data.get('d')
+    change_percent = data.get('dp')
+
+    if not price:
+        return jsonify({"error": "Stock not found"})
 
     return jsonify({
-        "symbol": quote.get('01. symbol'),
-        "price": quote.get('05. price'),
-        "change": quote.get('09. change'),
-        "change_percent": quote.get('10. change percent')
+        "symbol": symbol,
+        "price": round(price, 2),
+        "change": round(change, 2),
+        "change_percent": round(change_percent, 2)
     })
 
 if __name__ == '__main__':
